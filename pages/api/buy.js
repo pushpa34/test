@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import { sendToken } from "../../../utils/sendToken";
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
