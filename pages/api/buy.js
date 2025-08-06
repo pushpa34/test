@@ -1,53 +1,49 @@
-import fs from 'fs';
-import path from 'path';
-import { NextResponse } from 'next/server';
-import { ethers } from 'ethers';
+import { sendToken } from "../../utils/sendToken";
+import nodemailer from "nodemailer";
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const RPC_URL = "https://bsc-dataseed.binance.org/";
-const TOKEN_ADDRESS = "0x2E82279E5b7172460797c01836ce053581c080fb";
-const ABI = ["function transfer(address to, uint amount) public returns (bool)"];
-
-export async function POST(req) {
-  const body = await req.json();
-  const { walletAddress, amountPaidINR } = body;
-
-  if (!walletAddress || !amountPaidINR) {
-    return NextResponse.json({ error: "Missing wallet or amount." }, { status: 400 });
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const dataPath = path.join(process.cwd(), 'data', 'data.json');
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  let { totalINRReceived, totalCoinsSent } = data;
+  const { walletAddress, amount, upiId } = req.body;
 
-  let currentPrice = totalCoinsSent === 0 ? 1 : totalINRReceived / totalCoinsSent;
-  const coinsToSend = amountPaidINR / currentPrice;
-
-  const provider = new ethers.JsonRpcProvider(RPC_URL);
-  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-  const contract = new ethers.Contract(TOKEN_ADDRESS, ABI, wallet);
-
-  const decimals = 18;
-  const amountToSend = ethers.parseUnits(coinsToSend.toString(), decimals);
+  if (!walletAddress || !amount || !upiId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   try {
-    const tx = await contract.transfer(walletAddress, amountToSend);
-    await tx.wait();
+    // Step 1: Verify payment (fake simulation for now)
+    const paymentSuccess = true; // In real world, you'd use Razorpay, Cashfree, etc.
 
-    totalINRReceived += amountPaidINR;
-    totalCoinsSent += parseFloat(coinsToSend.toFixed(6));
+    if (paymentSuccess) {
+      // Step 2: Send token to wallet
+      await sendToken(walletAddress, amount);
 
-    fs.writeFileSync(dataPath, JSON.stringify({ totalINRReceived, totalCoinsSent }, null, 2));
+      // Step 3: Send email to your Gmail
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
 
-    return NextResponse.json({
-      success: true,
-      message: "Tokens sent successfully.",
-      txHash: tx.hash,
-      coinsSent: coinsToSend,
-      newPrice: totalINRReceived / totalCoinsSent
-    });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Transfer failed." }, { status: 500 });
+      const mailOptions = {
+        from: process.env.EMAIL_ID,
+        to: process.env.EMAIL_ID, // send to yourself
+        subject: "🟢 New RCB Coin Purchase",
+        text: `Someone bought RCB Coin!\n\nWallet Address: ${walletAddress}\nAmount Paid (INR): ₹${amount}\nUPI ID: ${upiId}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res.status(200).json({ success: true, message: "Token sent and email notified" });
+    } else {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
+  } catch (error) {
+    console.error("Error in buy API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
