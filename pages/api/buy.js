@@ -1,23 +1,49 @@
+import { sendToken } from "../../utils/sendToken";
 import nodemailer from "nodemailer";
-import { sendToken } from "../../../utils/sendToken";
-import { NextResponse } from 'next/server';
-import { ethers } from 'ethers';
-import dotenv from 'dotenv';
 
-dotenv.config();
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-export async function POST(req) {
+  const { walletAddress, amount, upiId } = req.body;
+
+  if (!walletAddress || !amount || !upiId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
   try {
-    const { userAddress, amountInINR } = await req.json();
+    // Step 1: Verify payment (fake simulation for now)
+    const paymentSuccess = true; // In real world, you'd use Razorpay, Cashfree, etc.
 
-    // Convert INR to token amount (1 RCB = ₹1)
-    const tokenAmount = ethers.utils.parseUnits(amountInINR.toString(), 18);
+    if (paymentSuccess) {
+      // Step 2: Send token to wallet
+      await sendToken(walletAddress, amount);
 
-    const tx = await sendToken(userAddress, tokenAmount);
+      // Step 3: Send email to your Gmail
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
 
-    return NextResponse.json({ success: true, hash: tx.hash });
+      const mailOptions = {
+        from: process.env.EMAIL_ID,
+        to: process.env.EMAIL_ID, // send to yourself
+        subject: "🟢 New RCB Coin Purchase",
+        text: `Someone bought RCB Coin!\n\nWallet Address: ${walletAddress}\nAmount Paid (INR): ₹${amount}\nUPI ID: ${upiId}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res.status(200).json({ success: true, message: "Token sent and email notified" });
+    } else {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
   } catch (error) {
-    console.error('Transaction Error:', error);
-    return NextResponse.json({ success: false, error: error.message });
+    console.error("Error in buy API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
