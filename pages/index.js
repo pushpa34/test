@@ -16,53 +16,69 @@ export default function Home() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           minHeight: '100vh',
-          padding: '40px 20px',
-          color: '#fff',
-          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '30px',
         }}
       >
-        <img
-          src="/logo.png"
-          alt="RCB Coin Logo"
-          width={150}
-          style={{ borderRadius: '10px', marginBottom: '20px' }}
-        />
-
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Royal Challengers Battalion</h1>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '30px' }}>RCB Coin</h2>
-
-        <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 30px' }}>
-          Welcome to the future of fan-powered cryptocurrency. Buy RCB Coin now and become part of the revolution.
-        </p>
-
-        <Link href="/buy">
-          <button
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              backgroundColor: '#e50914',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              marginBottom: '40px',
-            }}
-          >
-            Buy RCB Coin with UPI
-          </button>
-        </Link>
-
-        <div style={{ marginTop: '20px' }}>
-          <h3>Scan to Pay</h3>
+        <div
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            borderRadius: '20px',
+            padding: '40px 30px',
+            maxWidth: '600px',
+            width: '100%',
+            color: '#fff',
+            textAlign: 'center',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.6)',
+          }}
+        >
           <img
-            src="/qrcode.png"
-            alt="UPI QR Code"
-            width={220}
-            style={{ borderRadius: '8px', marginTop: '10px' }}
+            src="/logo.png"
+            alt="RCB Coin Logo"
+            width={120}
+            height={120}
+            style={{ borderRadius: '50%', marginBottom: '20px' }}
           />
-          <p style={{ fontSize: '0.9rem', marginTop: '10px' }}>
-            UPI ID: <strong>pushpav1076@okicici</strong>
+
+          <h1 style={{ fontSize: '2.4rem', marginBottom: '10px' }}>RCB Coin</h1>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '20px' }}>Royal Challengers Battalion</h3>
+
+          <p style={{ fontSize: '1rem', marginBottom: '30px', lineHeight: '1.6' }}>
+            Join the fan-powered crypto movement. RCB Coin is here to revolutionize fan engagement and give power to the community. Buy now using UPI and become part of the battalion.
           </p>
+
+          <Link href="/buy">
+            <button
+              style={{
+                padding: '14px 30px',
+                fontSize: '1rem',
+                backgroundColor: '#e50914',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                marginBottom: '30px',
+                transition: 'all 0.3s',
+              }}
+            >
+              🚀 Buy RCB Coin with UPI
+            </button>
+          </Link>
+
+          <div style={{ marginTop: '10px' }}>
+            <h3>Scan to Pay</h3>
+            <img
+              src="/qrcode.png"
+              alt="UPI QR Code"
+              width={180}
+              style={{ borderRadius: '10px', marginTop: '10px' }}
+            />
+            <p style={{ fontSize: '0.9rem', marginTop: '10px' }}>
+              UPI ID: <strong>pushpav1076@okicici</strong>
+            </p>
+          </div>
         </div>
       </div>
     </>
