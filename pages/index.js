@@ -1,73 +1,137 @@
-// pages/index.js
-
-import Image from 'next/image';
-import Head from 'next/head';
+import Head from "next/head";
+import { useState } from "react";
 
 export default function Home() {
+  const [wallet, setWallet] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/buy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ wallet, amount }),
+    });
+    const data = await res.json();
+    alert(data.message || "Transaction submitted!");
+  };
+
   return (
-    <div className="bg-black text-white font-orbitron min-h-screen p-4">
+    <>
       <Head>
         <title>RCB Coin - Royal Challengers Battalion</title>
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
       </Head>
+      <main className="min-h-screen bg-black text-white font-sans p-4">
+        <div className="max-w-4xl mx-auto py-10">
+          <h1 className="text-4xl font-bold text-center mb-8 text-red-500">
+            Royal Challengers Battalion (RCB Coin)
+          </h1>
 
-      <header className="text-center p-6 border-b border-gray-800">
-        <h1 className="text-4xl text-[#ff0b56]">RCB Coin</h1>
-        <p className="text-lg">Royal Challengers Battalion - The Future of Fan-Powered Crypto</p>
-      </header>
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg mb-10">
+            <h2 className="text-xl font-semibold mb-2">Token Details</h2>
+            <ul className="list-disc pl-5 space-y-1 text-gray-300">
+              <li>Token Full Name: Royal Challengers Battalion (RCB Coin)</li>
+              <li>Total Supply: 1.8 Crore (1,80,00,000)</li>
+              <li>Contract Address: [Paste your contract address]</li>
+              <li>Your Wallet Address: 0x2E82279E5b7172460797c01836ce053581c080fb</li>
+              <li>Contact Email: pushpav1076@gmail.com</li>
+            </ul>
+          </div>
 
-      <section className="my-8">
-        <h2 className="text-2xl">About RCB Coin</h2>
-        <p><strong>Token Name:</strong> Royal Challengers Battalion (RCB Coin)</p>
-        <p><strong>Total Supply:</strong> 1.8 Crore (1,80,00,000)</p>
-        <p><strong>Contract Address:</strong> 0x2E82279E5b7172460797c01836ce053581c080fb</p>
-      </section>
+          {/* Buy Section */}
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg mb-10">
+            <h2 className="text-2xl font-bold mb-4 text-white text-center">
+              Buy RCB Coin with UPI
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white">
+                  UPI Payment QR / Link:
+                </label>
+                <p className="text-green-400 text-sm">
+                  upi://pay?pa=pushpav1076@okicici&pn=RCB%20Coin&am=Amount&cu=INR
+                </p>
+              </div>
+              <input
+                type="text"
+                placeholder="Your Wallet Address"
+                value={wallet}
+                onChange={(e) => setWallet(e.target.value)}
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Amount in INR"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
+              >
+                Buy Now
+              </button>
+            </form>
+          </div>
 
-      <section className="my-8">
-        <h2 className="text-2xl">Live Price Chart</h2>
-        <iframe
-          src="https://poocoin.app/tokens/0x2E82279E5b7172460797c01836ce053581c080fb"
-          width="100%"
-          height="400"
-          className="border-none"
-        ></iframe>
-      </section>
-
-      <section className="my-8 grid md:grid-cols-2 gap-10">
-        <div>
-          <h2 className="text-xl">Buy RCB Coin</h2>
-          <p className="mb-2">Scan QR or click to pay: <strong>pushpav1076@okicici</strong></p>
-          <Image src="/qr.png" alt="UPI QR" width={200} height={200} />
-          <p><a href="upi://pay?pa=pushpav1076@okicici&am=100&cu=INR" className="underline text-blue-400">Pay Now via UPI</a></p>
-          <form action="/api/buy" method="POST" className="mt-4">
-            <label className="block mb-2">Your BSC Wallet Address:</label>
-            <input type="text" name="wallet" className="text-black w-full p-2 mb-2" required />
-            <button type="submit" className="bg-[#ff0b56] px-4 py-2">Submit Payment Info</button>
-          </form>
+          {/* Sell Section */}
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg mb-10">
+            <h2 className="text-2xl font-bold mb-4 text-white text-center">
+              Sell RCB Coin
+            </h2>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const res = await fetch("/api/sell", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    userWalletAddress: e.target.wallet.value,
+                    amountToSell: e.target.amount.value,
+                    userUPI: e.target.upi.value,
+                  }),
+                });
+                const data = await res.json();
+                alert(data.message || "Sell request submitted!");
+              }}
+              className="space-y-4"
+            >
+              <input
+                type="text"
+                name="wallet"
+                placeholder="Your Wallet Address"
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white"
+                required
+              />
+              <input
+                type="number"
+                name="amount"
+                placeholder="Amount of RCB Coin to Sell"
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white"
+                required
+              />
+              <input
+                type="text"
+                name="upi"
+                placeholder="Your UPI ID (e.g., xyz@okaxis)"
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
+              >
+                Submit Sell Request
+              </button>
+            </form>
+          </div>
         </div>
-
-        <div>
-          <h2 className="text-xl">Sell RCB Coin</h2>
-          <form action="/api/sell" method="POST" className="mt-4">
-            <label className="block mb-2">Your BSC Wallet Address:</label>
-            <input type="text" name="wallet" className="text-black w-full p-2 mb-2" required />
-            <label className="block mb-2">Amount of RCB to Sell:</label>
-            <input type="number" name="amount" className="text-black w-full p-2 mb-2" required />
-            <label className="block mb-2">Your UPI ID (to receive INR):</label>
-            <input type="text" name="upi" className="text-black w-full p-2 mb-2" required />
-            <button type="submit" className="bg-[#ff0b56] px-4 py-2">Sell Tokens</button>
-          </form>
-        </div>
-      </section>
-
-      <section className="my-8">
-        <h2 className="text-xl">Contact</h2>
-        <p>Email: pushpav1076@gmail.com</p>
-      </section>
-
-      <footer className="text-center py-4 border-t border-gray-800">
-        <p>&copy; 2025 RCB Coin. All rights reserved.</p>
-      </footer>
-    </div>
+      </main>
+    </>
   );
 }
