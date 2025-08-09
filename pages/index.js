@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <div
       style={{
-        backgroundImage: "url('/background.png')", // updated to .png
+        backgroundImage: "url('/background.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '100vh',
@@ -25,7 +25,7 @@ export default function Home() {
       >
         {/* Logo */}
         <img
-          src="/logo.jpg" // updated to .jpg
+          src="/logo.jpg"
           alt="RCB Coin Logo"
           style={{ width: '100px', marginBottom: '20px' }}
         />
@@ -38,6 +38,21 @@ export default function Home() {
           Join the fan-powered crypto movement. RCB Coin is here to revolutionize fan
           engagement and give power to the community. Buy now using UPI and become part of the battalion.
         </p>
+
+        {/* Contract Address */}
+        <div
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            padding: '10px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            fontSize: '14px',
+            wordBreak: 'break-all'
+          }}
+        >
+          <strong>Contract Address:</strong><br />
+          0x28bb28cBFD45b647EE2b8A37B204f9C402E5e3c2
+        </div>
 
         {/* Buy Button */}
         <button
